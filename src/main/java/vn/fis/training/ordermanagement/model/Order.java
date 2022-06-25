@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@NamedEntityGraph(name="Order.orderItemEntityGraph", attributeNodes = @NamedAttributeNode("orderItems"))
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,7 @@ public class Order {
     private Customer customer;
 
 //    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
     @Column(name="total_amount")

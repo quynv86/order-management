@@ -15,6 +15,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             IllegalArgumentException.class
     })
     protected ResponseEntity<ErrorMessage> handleOrderNotFoundException(Exception exception){
+        logger.error("Error: ", exception);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorMessage.builder().code(ORDER_NOT_FOUND).message(exception.getMessage()).build());
     }
@@ -23,6 +24,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             Exception.class
     })
     protected ResponseEntity<ErrorMessage> handleSystemError(Exception exception){
+        logger.error("Error: ", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorMessage.builder().code(INTERNAL_SERVER_ERROR).message(exception.getMessage()).build());
     }

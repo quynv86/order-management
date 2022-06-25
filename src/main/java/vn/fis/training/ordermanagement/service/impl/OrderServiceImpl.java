@@ -8,9 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.fis.training.ordermanagement.dto.CreateOrderItemDTO;
 import vn.fis.training.ordermanagement.dto.OrderDTO;
+import vn.fis.training.ordermanagement.model.Order;
+import vn.fis.training.ordermanagement.model.OrderItem;
 import vn.fis.training.ordermanagement.model.OrderStatus;
+import vn.fis.training.ordermanagement.model.Product;
 import vn.fis.training.ordermanagement.repository.OrderRepository;
+import vn.fis.training.ordermanagement.repository.ProductRepository;
 import vn.fis.training.ordermanagement.service.OrderService;
 
 @Service
@@ -18,10 +23,13 @@ import vn.fis.training.ordermanagement.service.OrderService;
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
+    private ProductRepository productRepository;
+
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository){
+    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository){
         this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
     }
     @Override
     @Transactional(readOnly = true)
@@ -40,5 +48,21 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO findById(Long orderId) {
         return OrderDTO.Mapper.fromEntity(orderRepository.findById(orderId).orElseThrow(
                 () -> {throw new IllegalArgumentException(String.format("Not found order with id %s",orderId));}));
+    }
+
+    @Override
+    @Transactional
+    public Order addOrderItem(CreateOrderItemDTO createOrderItemDTO) {
+        Order order = orderRepository.findById(createOrderItemDTO.getOrderId()).orElseThrow(()-> new IllegalArgumentException("Order Not Found. OrderID: " + createOrderItemDTO.getOrderId()));
+        Product product = productRepository.findById(createOrderItemDTO.getProductId()).orElseThrow(()-> new IllegalArgumentException("Product Not Found. ProductId: " + createOrderItemDTO.getProductId()));
+        OrderItem orderItem = OrderItem.builder().order(order).quantity(createOrderItemDTO.getQuantity())
+                .product(product)
+                .amount(product.getPrice() * createOrderItemDTO.getQuantity())
+                .build();
+        order.getOrderItems().add(orderItem);
+        Double totalAmount = order.getOrderItems().stream().mapToDouble(item -> item.getAmount()).reduce(0,(amountOne, amountTwo)-> amountOne + amountTwo);
+        order.setTotalAmount(totalAmount);
+//        return orderRepository.save(order);
+        return order;
     }
 }

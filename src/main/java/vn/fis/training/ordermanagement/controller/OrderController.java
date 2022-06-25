@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import vn.fis.training.ordermanagement.dto.CreateOrderItemDTO;
 import vn.fis.training.ordermanagement.dto.OrderDTO;
+import vn.fis.training.ordermanagement.model.Order;
 import vn.fis.training.ordermanagement.service.OrderService;
 
 @RestController
@@ -33,6 +33,12 @@ public class OrderController {
     public OrderDTO findById(@PathVariable(name="orderId")Long orderId) {
         return orderService.findById(orderId);
     }
+
+    @PostMapping(value = "/addOrderItem", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Order addOrderItem(@RequestBody  CreateOrderItemDTO createOrderItemDTO) {
+        return orderService.addOrderItem(createOrderItemDTO);
+    }
+
 }
 
 /*
