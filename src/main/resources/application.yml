@@ -1,0 +1,19 @@
+server:
+  port: 8899
+spring:
+  application:
+    name: Order Management Application
+  datasource:
+    url: jdbc:mysql://localhost:3306/fis-training?allowPublicKeyRetrieval=true&useSSL=false
+    username: training
+    password: training
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
